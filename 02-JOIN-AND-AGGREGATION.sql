@@ -138,4 +138,59 @@ SELECT emp.employee_id, emp.first_name,
 FROM employees emp JOIN employees man
                     ON emp.manager_id = man.employee_id;
 
-                    
+-----------
+-- Aggregation (집계)
+-- 여러 개의 값을 집계하여 하나의 결과값을 산출
+
+-- count: 갯수 세기 함수
+-- employees 테이블은 몇 개의 레코드를 가지고 있는가?
+SELECT COUNT(*) FROM employees; -- *는 전체 레코드 카운트를 집계 (내부 값이 null이 있어도 집계)
+SELECT COUNT(commission_pct) FROM employees; -- 특정 컬럼을 명시하면 null인 것은 집계에서 제외
+SELECT COUNT(*) FROM employees WHERE commission_pct is not null; -- 위의 것과 같은 의미
+
+-- 합계 함수 : SUM
+-- 급여의 총 합?
+SELECT SUM(salary) FROM employees;
+
+-- 평균 함수 : AVG
+SELECT AVG(salary) FROM employees;
+
+-- 사원들이 받는 평균 커미션 비율
+SELECT AVG(commission_pct) FROM employees;
+SELECT AVG(nvl(commission_pct, 0)) FROM employees;
+
+-- null 이 포함된 집계는 null 포함여부 결정후 집계
+
+-- salary 최소 최대 평균 중앙값
+SELECT MIN(salary), MAX(salary), AVG(salary), MEDIAN(salary)
+FROM employees;
+
+-- 흔히 범하는 오류
+-- 부서의 아이디, 급여의 평균 출력하고자
+SELECT department_id, AVG(salary) FROM employees; -- Error
+
+-- 만약에 부서별 평균 연봉을 구하려면?
+-- 부서별 Group을 지어준 데이터를 대상으로 집계 함수 수행
+SELECT department_id, ROUND(AVG(salary), 2)
+FROM employees
+GROUP BY department_id
+ORDER BY department_id;
+
+-- 집계 함수를 사용한 SELECT 컬럼 목록
+-- 집계에 참여한 필드, 집계함수만 올 수 있다.
+
+-- 부서별 평균 급여를 내림차순으로 출력
+SELECT department_id, ROUND(AVG(salary), 2) sal_avg
+FROM employees
+GROUP BY department_id
+ORDER BY sal_avg DESC;
+
+-- 부서별 평균 급여를 산출하고 평균 급여가 2000이상인 부서를 출력
+SELECT department_id, ROUND(AVG(salary), 2)
+FROM employees
+GROUP BY department_id
+    HAVING ROUND(AVG(salary),2) >= 7000
+ORDER BY department_id;
+
+
+
