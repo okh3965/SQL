@@ -127,31 +127,32 @@ WHERE e.employee_id = jh.employee_id AND
     jh.job_id = 'AC_ACCOUNT';
     
 /*
+문제8.
 각 부서(department)에 대해서 부서번호(department_id), 부서이름(department_name), 
 매니저(manager)의 이름(first_name), 위치(locations)한 도시(city), 나라(countries)의 이름
 (countries_name) 그리고 지역구분(regions)의 이름(resion_name)까지 전부 출력해 보세요.
 */
-SELECT * FROM employees;
+SELECT * FROM departments;
 
-SELECT e2.department_id,
+SELECT e.department_id,
     department_name,
-    e2.first_name,
+    e.first_name,
     city,
     country_name,
     region_name
-FROM employees e1, employees e2, departments d, locations l, countries c, regions r
-WHERE e2.department_id = d.department_id AND
+FROM employees e, departments d, locations l, countries c, regions r
+WHERE e.department_id = d.department_id AND
     d.location_id = l.location_id AND
     l.country_id = c.country_id AND
     c.region_id = r.region_id AND
-    e1.manager_id = e2.employee_id
-GROUP BY e2.department_id, 
+    e.employee_id = d.manager_id
+GROUP BY e.department_id, 
     department_name,
-    e2.first_name, 
+    e.first_name, 
     city,
     country_name,
     region_name
-ORDER BY e2.department_id;
+ORDER BY e.department_id;
 
 /*
 문제9.
