@@ -74,3 +74,68 @@ SELECT first_name, salary FROM employees emp, jobs j
 WHERE j.job_id = 'AD_ASST' AND
     salary BETWEEN j.min_salary AND j.max_salary;
 
+------------
+-- OUTER JOIN
+------------
+/*
+조건 만족하는 짝이 없는 튜플도 NULL을 포함해서 출력에 참여시키는 JOIN
+모든 레코드를 출력할 테이블의 위치에 따라서 LEFT, RIGHT, FULL OUTER JOIN으로 구분
+ORACLE의 경우, null이 출력되는 조건쪽에 (+)
+*/
+-- INNER JOIN
+SELECT first_name,
+    emp.department_id,
+    dept.department_id,
+    department_name
+FROM employees emp, departments dept
+WHERE emp.department_id = dept.department_id (+); -- LEFT OUTER JOIN
+
+-- LEFT OUTER JOIN : ANSI SQL
+SELECT first_name,
+    emp.department_id,
+    dept.department_id,
+    department_name
+FROM employees emp LEFT OUTER JOIN departments dept -- emp 테이블의 모든 레코드는 출력에 참여
+                    ON emp.department_id = dept.department_id;
+    
+-- RIGHT OUTER JOIN : Oracle
+SELECT first_name,
+    emp.department_id,
+    dept.department_id,
+    department_name
+FROM employees emp, departments dept
+WHERE emp.department_id (+) = dept.department_id; -- departments 테이블의 모든 결과를 출력
+
+-- RIGHT OUTER JOIN : ANSI SQL
+SELECT first_name, 
+    emp.department_id,
+    dept.department_id,
+    department_name
+FROM employees emp RIGHT OUTER JOIN departments dept
+                    ON emp.department_id = dept.department_id;
+                    
+-- FULL OUTER JOIN : 양쪽 테이블 모두 출력에 참여
+SELECT first_name,
+    emp.department_id,
+    dept.department_id,
+    department_name
+FROM employees emp FULL OUTER JOIN departments dept
+                    ON emp.department_id = dept.department_id;
+
+-- SELF JOIN : 자신의 FK가 자신의 PK를 참조하는 방식의 JOIN
+-- 자신을 두 번 호출하므로 alias 사용할 수 밖에 없는 JOIN
+SELECT emp.employee_id, emp.first_name, -- 사원 정보
+    emp.manager_id,
+    man.first_name
+FROM employees emp, employees man
+WHERE emp.manager_id = man.employee_id
+ORDER BY man.first_name;
+
+-- ANSI SQL
+SELECT emp.employee_id, emp.first_name,
+    emp.manager_id,
+    man.first_name
+FROM employees emp JOIN employees man
+                    ON emp.manager_id = man.employee_id;
+
+                    
