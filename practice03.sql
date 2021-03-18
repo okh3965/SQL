@@ -7,12 +7,14 @@
 SELECT employee_id, 
     first_name, 
     last_name, 
-    department_name,
-    emp.department_id
+    department_name
 FROM employees emp, departments dept
 WHERE emp.department_id = dept.department_id
 ORDER BY department_name, employee_id DESC;
 
+--natural join 
+SELECT employee_id, first_name, last_name, department_name
+FROM employees NATURAL JOIN departments;
 /*
 문제2.
 employees 테이블의 job_id는 현재의 업무아이디를 가지고 있습니다.
@@ -24,8 +26,7 @@ SELECT employee_id,
     first_name,
     salary,
     department_name,
-    job_title,
-    emp.job_id
+    job_title
 FROM employees emp, jobs j, departments dept
 WHERE emp.job_id = j.job_id
     AND emp.department_id = dept.department_id
@@ -35,13 +36,22 @@ SELECT employee_id,
     first_name,
     salary,
     department_name,
-    job_title,
-    emp.job_id
+    job_title
 FROM employees emp, jobs j, departments dept
 WHERE emp.department_id = dept.department_id(+) AND
     emp.job_id = j.job_id
 ORDER BY emp.employee_id;
 
+--ANSI SQL
+SELECT employee_id,
+    first_name,
+    salary,
+    department_name,
+    job_title
+FROM employees emp LEFT OUTER JOIN departments dept
+                                ON emp.department_id = dept.department_id,
+    jobs
+WHERE emp.job_id = jobs.job_id;
 /*
 문제3.
 도시별로 위치한 부서들을 파악하려고 합니다.
@@ -64,17 +74,30 @@ FROM locations l, departments d
 WHERE l.location_id  = d.location_id (+)
 ORDER BY l.location_id;
 
+-- ANSI
+SELECT l.location_id,
+    city,
+    department_name,
+    department_id
+FROM locations l LEFT OUTER JOIN departments d
+                              ON l.location_id = d.location_id
+ORDER BY l.location_id;
 /*
 문제4.
 지역(regions)에 속한 나라들을 지역이름(region_name), 나라이름(country_name)으로 출력하
 되 지역이름(오름차순), 나라이름(내림차순) 으로 정렬하세요.
 */
-SELECT region_name,
-    country_name
+SELECT region_name 지역이름,
+    country_name 나라이름
 FROM regions r, countries c
 WHERE r.region_id = c.region_id
 ORDER BY region_name, country_name DESC;
 
+SELECT region_name 지역이름,
+    country_name 나라이름
+FROM regions r JOIN countries c 
+                 ON r.region_id = c.region_id
+ORDER BY region_name, country_name DESC;
 /*
 문제5. 
 자신의 매니저보다 채용일(hire_date)이 빠른 사원의
@@ -90,6 +113,12 @@ FROM employees e1, employees e2
 WHERE e1.manager_id = e2.employee_id
     AND e1.hire_date < e2.hire_date
 ORDER BY e1.hire_date;
+
+SELECT emp.employee_id, emp.first_name, emp.hire_date,
+    man.first_name, man.hire_date
+FROM employees emp, employees man
+WHERE emp.manager_id = man.employee_id AND
+    emp.hire_date < man.hire_date;
 
 /*
 문제6.
@@ -108,7 +137,7 @@ FROM countries c, locations l, departments d
 WHERE l.country_id = c.country_id AND
     l.location_id = d.location_id
 ORDER BY country_name;
-   
+       
 /* 
 문제7.
 job_history 테이블은 과거의 담당업무의 데이터를 가지고 있다.
