@@ -169,19 +169,26 @@ SELECT e.department_id,
     country_name,
     region_name
 FROM employees e, departments d, locations l, countries c, regions r
-WHERE e.department_id = d.department_id AND
-    d.location_id = l.location_id AND
+WHERE d.location_id = l.location_id AND
     l.country_id = c.country_id AND
     c.region_id = r.region_id AND
     e.employee_id = d.manager_id
-GROUP BY e.department_id, 
-    department_name,
-    e.first_name, 
-    city,
-    country_name,
-    region_name
 ORDER BY e.department_id;
 
+SELECT dept.department_id, dept.department_name,
+    man.first_name,
+    loc.city,
+    c.country_name,
+    reg.region_name
+FROM departments dept,
+    employees man,
+    locations loc,
+    countries c,
+    regions reg
+WHERE dept.manager_id = man.employee_id AND
+    dept.location_id = loc.location_id AND
+    loc.country_id = c.country_id AND
+    c.region_id = reg.region_id;
 /*
 문제9.
 각 사원(employee)에 대해서 사번(employee_id), 이름(first_name), 부서명
