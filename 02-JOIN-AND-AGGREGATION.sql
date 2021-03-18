@@ -192,5 +192,30 @@ GROUP BY department_id
     HAVING ROUND(AVG(salary),2) >= 7000
 ORDER BY department_id;
 
+--ROLLUP (부분합)
+-- GROUP BY 절과 함께 사용
+-- GROUP BY 결과에 상세한 요약 제공 (Item Subtotal)
+-- 부서별 급여의 합계 추출(부서 아이디, job_id)
+SELECT department_id,
+    job_id,
+    SUM(salary)
+FROM employees
+GROUP BY department_id, job_id
+ORDER BY department_id;
+
+SELECT department_id,
+    job_id,
+    SUM(salary)
+FROM employees
+GROUP BY ROLLUP(department_id, job_id);
+
+-- CUBE
+-- CrossTable에 대한 Summary를 함께 제공
+-- Rollup 함수로 추출된 Subtotal에
+-- Column Total 값을 추출할 수 있다.
+SELECT department_id, job_id, SUM(salary)
+FROM employees 
+GROUP BY CUBE(department_id, job_id)
+ORDER BY department_id;
 
 
