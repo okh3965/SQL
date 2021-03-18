@@ -218,4 +218,69 @@ FROM employees
 GROUP BY CUBE(department_id, job_id)
 ORDER BY department_id;
 
+------------
+-- Subquery
+------------
+/*
+하나의 SQL이 다른 SQL 질의의 일부에 포함되는 경우
+*/
+-- 단일행 서브쿼리
+-- 서브쿼리의 결과가 단일행인 경우, 단일행 비교 연산자를 사용(=, >, >=, <, <=, <>)
+-- 'Den'보다 급여를 많이 받는 사원의 이름과 급여는?
+-- 1. Den이 얼마나 급여를 받는지 - A
+-- 2. A보다 많은 급여를 받는 사람은?
+SELECT salary FROM employees WHERE first_name = 'Den'; -- 11000: 1
+SELECT first_name, salary FROM employees WHERE salary > 11000; -- : 2
+-- 합친다
+SELECT first_name, salary
+FROM employees
+WHERE salary > (SELECT salary FROM employees WHERE first_name = 'Den');
 
+-- 연습 :
+-- 급여의 중앙값보다 많이 받는 직원
+-- 1. 급여의 중앙값?
+-- 2. 중앙값보다 많이 받는 직원
+SELECT MEDIAN(salary) FROM employees;
+SELECT first_name, salary FROM employees WHERE salary > 6200;
+-- 합친다.
+SELECT first_name, salary
+FROM employees
+WHERE salary > (SELECT MEDIAN(salary) FROM employees);
+
+-- 급여를 가장 적게 받는 사람의 이름, 급여, 사원 번호 출력
+SELECT first_name, salary, employee_id
+FROM employees
+WHERE salary = (SELECT MIN(salary) FROM employees);
+
+/*
+-- 다중행 서브쿼리
+-- 서브쿼리 결과 레코드가 둘 이상인 경우, 단순비교 연산자 사용불가능
+-- 집합 연산 관련된 IN, ANY, ALL, EXIST등을 사용
+*/
+
+-- 110번 부서의 직원이 받는 급여는?
+-- IN -> OR과 비슷
+SELECT salary FROM employees WHERE department_id = 110; -- 레코드 갯수 2
+SELECT first_name, salary FROM employees 
+WHERE salary IN (SELECT salary FROM employees WHERE department_id = 110);
+
+-- ANY -> OR과 비슷
+SELECT first_name, salary FROM employees
+WHERE salary = ANY (SELECT salary FROM employees WHERE department_id = 110);
+SELECT first_name, salary FROM employees
+WHERE salary > ANY (SELECT salary FROM employees WHERE department_id = 110);
+
+-- ALL -> AND와 비슷
+SELECT first_name, salary FROM employees
+WHERE salary > ALL (SELECT salary FROM employees WHERE department_id = 110);
+
+-- Correlated Query
+-- 포함한 쿼리(Outer Query), 포함된 쿼리(Inner Query)가 서로 연관관계를 맺는 쿼리
+-- 사원 목록을 추출하되
+-- 자신이 속한 부서의 평균 급여보다 많이 받는 직원을 추출한다.
+SELECT first_name, salary, department_id
+FROM employees outer
+WHERE salary > (SELECT AVG(salary) FROM employees
+                WHERE department_id = outer.department_id);
+            
+    
