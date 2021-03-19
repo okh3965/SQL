@@ -1,3 +1,12 @@
+/*
+사용자 생성
+	CREATE USER C##NAMSK IDENTIFIED BY 1234;
+	- Oracle: 사용자 생성 -> 동일 이름의 SCHEMA도 같이 생성
+사용자 삭제
+	DROP USER C##NAMSK
+	DROP USER C##NAMSK CASCADE  - 연결된 객체도 모두 삭제
+권한을 가지지 않으면 아무 일도 못해요
+*/
 -- system 접속
 -- 사용자 정보 확인
 -- USER_USERS: 현재 사용자 관련 정보
@@ -175,6 +184,10 @@ WHERE table_name = 'BOOK';
 SHOW user;
 SELECT * FROM dictionary;
 
+-- DBA_ 딕셔너리 확인
+-- dba로 로그인 필요 as sysdba
+
+-- 사용자 DB 객체 dictionary USER_OBJECTS
 SELECT * FROM user_objects;
 SELECT object_name, object_type FROM user_objects;
 SELECT * FROM user_objects WHERE OBJECT_NAME = 'BOOK';
