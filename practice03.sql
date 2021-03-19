@@ -12,9 +12,15 @@ FROM employees emp, departments dept
 WHERE emp.department_id = dept.department_id
 ORDER BY department_name, employee_id DESC;
 
---natural join 
+--natural join  -> 불가
+--employees, departments 테이블은 두 개의 공통 필드를 가지고 있다.
 SELECT employee_id, first_name, last_name, department_name
 FROM employees NATURAL JOIN departments;
+
+SELECT employee_id, first_name, last_name, dept.department_name
+FROM employees emp, department dept
+WHERE emp.department_id = dept.department_id AND
+   emp.manager_id = dept.manager_id; 
 /*
 문제2.
 employees 테이블의 job_id는 현재의 업무아이디를 가지고 있습니다.

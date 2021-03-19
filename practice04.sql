@@ -21,6 +21,16 @@ WHERE salary > (SELECT AVG(salary) FROM employees) AND
         salary <= (SELECT MAX(salary) FROM employees)
 ORDER BY salary;
 
+SELECT ROUND(AVG(salary), 0) avgSalary,
+    MAX(salary) maxSalary
+FROM employees;
+
+SELECT employee_id, first_name, salary, avgSalary, maxSalary
+FROM employees emp, (SELECT ROUND(AVG(salary), 0) avgSalary,
+                            MAX(salary) maxSalary
+                        FROM employees) t
+WHERE emp.salary BETWEEN t.avgSalary AND t.maxSalary
+ORDER BY emp.salary;
 /*
 문제3.
 직원중 Steven(first_name) king(last_name)이 소속된 부서(departments)가 있는 곳의 주소
@@ -31,13 +41,11 @@ ORDER BY salary;
 */
 SELECT *
 FROM locations loc
-WHERE loc.location_id = 
-    (SELECT location_id
-        FROM departments
-        WHERE department_id = 
-            (SELECT department_id
-                FROM employees
-                WHERE first_name = 'Steven' AND last_name = 'King'));
+WHERE loc.location_id = (SELECT location_id
+                            FROM departments
+                            WHERE department_id = (SELECT department_id
+                                                        FROM employees
+                                                        WHERE first_name = 'Steven' AND last_name = 'King'));
 /*                
 문제4.
 job_id 가 'ST_MAN' 인 직원의 급여보다 작은 직원의 사번,이름,급여를 급여의 내림차순으로
@@ -80,7 +88,7 @@ FROM jobs j, (SELECT job_id, SUM(salary) sum
                 FROM employees
                 GROUP BY job_id) s
 WHERE j.job_id = s.job_id
-ORDER BY sum DESC;
+ORDER BY s.sum DESC;
 
 /*
 문제7.
@@ -94,6 +102,13 @@ WHERE salary > (SELECT AVG(salary)
                 FROM employees
                 GROUP BY department_id
                     HAVING department_id = outer.department_id);
+                    
+SELECT employee_id, first_name, emp.salary
+FROM employees emp, (SELECT department_id, AVG(salary) salary
+                        FROM employees
+                        GROUP BY department_id) t
+WHERE emp.department_id = t.department_id AND
+    emp.salary > t.salary;
 /*
 문제8.
 직원 입사일이 11번째에서 15번째의 직원의 사번, 이름, 급여, 입사일을 입사일 순서로 출력
@@ -107,3 +122,16 @@ FROM
         FROM employees
     ) e
 WHERE e.hr > 10 AND e.hr < 16;
+
+SELECT employee_id, first_name, salary, hire_date FROM employees ORDER BY hire_date;
+SELECT rownum, employee_id, first_name, salary, hire_date FROM (
+    SELECT employee_id, first_name, salary, hire_date FROM employees ORDER BY hire_date
+);
+
+SELECT rn, employee_id, first_name, salary, hire_date FROM (
+    SELECT rownum rn, employee_id, first_name, salary, hire_date FROM (
+    SELECT employee_id, first_name, salary, hire_date FROM employees ORDER BY hire_date
+    )
+)
+WHERE rn >= 11 AND rn <= 15;
+--WHERE rn BETWEEN 11 AND 15;
