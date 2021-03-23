@@ -178,4 +178,3 @@ WHERE object_type = 'SEQUENCE';
 DROP SEQUENCE my_seq;
 SELECT * FROM user_sequences;
 
-
